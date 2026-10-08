@@ -1,0 +1,47 @@
+# Active only in the public mirror (github.com/techavenuelabs/zebchat-ios), where sdks/ios is the
+# repository root. Pushing a version tag (e.g. 1.0.0) tests the package, then publishes the pod
+# to CocoaPods trunk. SPM needs nothing more: it resolves the tag itself.
+# Secret: COCOAPODS_TRUNK_TOKEN (the trunk session token, see PUBLISHING.md).
+name: Release
+
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Tag matches the podspec and the SDK version
+        if: github.ref_type == 'tag'
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          grep -q "s.version          = '${TAG}'" ZebChat.podspec || { echo "podspec version != ${TAG}"; exit 1; }
+          grep -q "\"${TAG}\"" Sources/ZebChat/ZebChat.swift || { echo "ZebChat.version != ${TAG}"; exit 1; }
+
+      - name: Unit tests (Swift package)
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          def version(runtime):
+              return [int(p) for p in runtime.split("iOS-")[1].split("-") if p.isdigit()]
+          phones = [(version(rt), d["udid"]) for rt, ds in devices.items() if "iOS-" in rt
+                    for d in ds if d.get("isAvailable", True) and d["name"].startswith("iPhone")]
+          print(max(phones)[1])
+          ')
+          SCHEME=ZebChat
+          if xcodebuild -list | grep -q "ZebChat-Package"; then SCHEME=ZebChat-Package; fi
+          xcodebuild test -scheme "$SCHEME" -destination "id=$UDID" -skipPackagePluginValidation
+
+      - name: Publish to CocoaPods trunk
+        if: github.ref_type == 'tag'
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          command -v pod >/dev/null || sudo gem install cocoapods
+          pod trunk push ZebChat.podspec --allow-warnings

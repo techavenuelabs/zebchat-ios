@@ -1,0 +1,6 @@
+/* ZebChat SDK strings (the chat page has its own translations). */
+"chat.error.title" = "चैट उपलब्ध नहीं है";
+"chat.error.message" = "हम चैट लोड नहीं कर सके। अपना कनेक्शन जाँचें और फिर से कोशिश करें।";
+"chat.error.retry" = "फिर से कोशिश करें";
+"chat.close" = "बंद करें";
+"chat.loading" = "चैट लोड हो रही है";

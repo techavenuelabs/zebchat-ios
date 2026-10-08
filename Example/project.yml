@@ -1,0 +1,60 @@
+# XcodeGen spec for the ZebChat example app. Generate the project with:
+#   brew install xcodegen && cd sdks/ios/Example && xcodegen generate
+# The generated ZebChatExample.xcodeproj is not committed (see ../.gitignore).
+name: ZebChatExample
+options:
+  bundleIdPrefix: com.zebchat
+  deploymentTarget:
+    iOS: '14.0'
+  createIntermediateGroups: true
+packages:
+  ZebChat:
+    path: ..
+settings:
+  base:
+    SWIFT_VERSION: '5.9'
+    MARKETING_VERSION: '1.0.0'
+    CURRENT_PROJECT_VERSION: '1'
+targets:
+  ZebChatExample:
+    type: application
+    platform: iOS
+    sources:
+      - ZebChatExample
+    dependencies:
+      - package: ZebChat
+    # A shared scheme, so `xcodebuild -scheme ZebChatExample` works on a fresh checkout (CI).
+    scheme: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zebchat.example
+        TARGETED_DEVICE_FAMILY: '1,2'
+        # Add this bundle id under Website → Mobile apps → iOS in the ZebChat dashboard.
+        ZEBCHAT_SITE_KEY: zc_demo
+        ZEBCHAT_API_BASE_URL: ''
+        ZEBCHAT_CHAT_PAGE_URL: ''
+    info:
+      path: ZebChatExample/Info.plist
+      properties:
+        CFBundleDisplayName: ZebChat Example
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Required by the chat's photo and camera upload (the SDK cannot declare these).
+        NSCameraUsageDescription: Take a photo to send in the chat.
+        NSPhotoLibraryUsageDescription: Choose photos to send in the chat.
+        # Local development against `pnpm dev` (http://localhost); not needed in production.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        ZebChatSiteKey: $(ZEBCHAT_SITE_KEY)
+        ZebChatAPIBaseURL: $(ZEBCHAT_API_BASE_URL)
+        ZebChatChatPageURL: $(ZEBCHAT_CHAT_PAGE_URL)

@@ -1,0 +1,6 @@
+/* ZebChat SDK strings (the chat page has its own translations). */
+"chat.error.title" = "Chat nicht verfügbar";
+"chat.error.message" = "Der Chat konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.";
+"chat.error.retry" = "Erneut versuchen";
+"chat.close" = "Schließen";
+"chat.loading" = "Chat wird geladen";

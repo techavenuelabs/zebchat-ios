@@ -1,0 +1,6 @@
+/* ZebChat SDK strings (the chat page has its own translations). */
+"chat.error.title" = "الدردشة غير متاحة";
+"chat.error.message" = "تعذّر تحميل الدردشة. تحقّق من اتصالك وحاول مرة أخرى.";
+"chat.error.retry" = "إعادة المحاولة";
+"chat.close" = "إغلاق";
+"chat.loading" = "جارٍ تحميل الدردشة";
